@@ -1,0 +1,24 @@
+version: '3'
+services:
+  backend:
+    image: shintaix/serverside:latest
+    ports:
+      - 8000:8000
+    environment:
+      - MONGO_URI=mongodb+srv://admin:admin@cluster0.ltqy7qz.mongodb.net/test2?retryWrites=true&w=majority
+    networks:
+      - my-network
+
+  frontend:
+    stdin_open: true
+    image: shintaix/clientside:latest
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge

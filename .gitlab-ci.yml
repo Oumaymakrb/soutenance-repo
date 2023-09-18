@@ -1,0 +1,47 @@
+stages:
+  - build
+  - terraform
+
+before_script:
+  - echo "$DOCKERPWD" | sudo -S docker login --username $DOCKERUSERNAME --password-stdin
+
+
+client_test:
+  stage: build
+  script:
+    - cd ./client
+    - sudo docker build -t shintaix/clientside:latest .
+    - sudo docker run shintaix/clientside:latest npm --silent run test
+    - sudo docker push shintaix/clientside:latest
+
+serveur_test:
+  stage: build
+  script:
+    - cd ./server
+    - sudo docker build -t shintaix/serverside:latest .
+    - sudo docker run shintaix/serverside:latest npm --silent run test
+    - sudo docker push shintaix/serverside:latest
+
+
+image:
+  name: hashicorp/terraform:latest
+  entrypoint:
+    - '/usr/bin/env'
+    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
+validate:
+  stage: terraform
+  before_script:
+    - az login -u $username -p $password
+    - export PROJECT_ID="46337604"
+    - export TF_USERNAME="Shintai-X"
+    - export TF_PASSWORD="glpat-ddCcBVbZ82ZhZvismNgi"
+    - export TF_ADDRESS="https://gitlab.com/api/v4/projects/${PROJECT_ID}/terraform/state/old-state-name"
+    - cd ./terraform
+    - echo -e "#!/bin/bash\n\nterraform init -backend-config=\"address=${TF_ADDRESS}\" -backend-config=\"lock_address=${TF_ADDRESS}/lock\" -backend-config=\"unlock_address=${TF_ADDRESS}/lock\" -backend-config=\"username=${TF_USERNAME}\" -backend-config=\"password=${TF_PASSWORD}\" -backend-config=\"lock_method=POST\" -backend-config=\"unlock_method=DELETE\" -backend-config=\"retry_wait_min=5\" -migrate-state <<< \"yes\"" > init.sh
+    - chmod +x init.sh
+  script:
+    - ./init.sh
+    - terraform validate
+    - terraform plan -out=tfplan -lock=false
+    - terraform apply -auto-approve -lock=false tfplan

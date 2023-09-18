@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build and Push Docker Image') {
+            steps {
+                script {
+                   
+                    def dockerImage = 'oumaymaii/app_gitlab_choctitan'
+                    def dockerTag = 'latest' 
+
+                   
+                    docker.build("${dockerImage}:${dockerTag}")
+
+                    
+                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                     
+                        docker.image("${dockerImage}:${dockerTag}").push()
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
+

@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/35781dbc-f37c-430f-8900-8d381ba04c1a/resourceGroups/appsvc_linux_centralus_basic/providers/Microsoft.Web/sites/mernapp",
+    "appService.deploySubpath": "."
+}
