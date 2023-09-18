@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build and Push Docker Images
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,12 +21,13 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
-      - name: Build Docker image
-        run: |
-          docker build -t oumaymaii/soutenance-repo:latest .
-          docker push oumaymaii/soutenance-repo:latest
 
-          
-      - name: Push Docker image to Docker Hub
-        run: docker push oumaymaii/soutenance-repo:latest
+      - name: Build and Push Server-Side Docker image
+        run: |
+          docker build -t oumaymaii/soutenance-repo-server:latest -f ./server/dockerfile 
+          docker push oumaymaii/soutenance-repo-server:latest
+
+      - name: Build and Push Client-Side Docker image
+        run: |
+          docker build -t oumaymaii/soutenance-repo-client:latest -f ./client/dockerfile 
+          docker push oumaymaii/soutenance-repo-client:latest
