@@ -24,10 +24,10 @@ jobs:
 
       - name: Build and Push Server-Side Docker image
         run: |
-          docker build -t oumaymaii/soutenance-repo-server:latest -f ./server/dockerfile 
+          docker build -t oumaymaii/soutenance-repo-server:latest -f ./server/dockerfile ./server
           docker push oumaymaii/soutenance-repo-server:latest
 
       - name: Build and Push Client-Side Docker image
         run: |
-          docker build -t oumaymaii/soutenance-repo-client:latest -f ./client/dockerfile 
+          docker build -t oumaymaii/soutenance-repo-client:latest -f ./client/dockerfile ./client
           docker push oumaymaii/soutenance-repo-client:latest
