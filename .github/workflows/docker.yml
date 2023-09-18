@@ -23,6 +23,6 @@ jobs:
       - name: Build Docker image
         run: |
           docker build -t oumaymaii/soutenance-repo:latest .
-          docker push oumaymaii/soutenance-repo:latest1
+          docker push oumaymaii/soutenance-repo:latest
       - name: Push Docker image to Docker Hub
         run: docker push oumaymaii/soutenance-repo:latest
