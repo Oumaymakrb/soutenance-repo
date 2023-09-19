@@ -4,7 +4,7 @@ FROM node:14
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json from the root directory
+# Copy package.json and package-lock.json from the server directory
 COPY package*.json ./
 
 # Install dependencies
@@ -13,11 +13,8 @@ RUN npm install --silent
 # Copy all source files into the container
 COPY . .
 
-# Build the React application
-RUN npm run build
+# Expose the port on which the backend application will be accessible
+EXPOSE 8000
 
-# Expose the port on which the application will be accessible
-EXPOSE 3000
-
-# Start the React application
+# Start the backend application
 CMD ["npm", "start"]
