@@ -5,7 +5,7 @@ FROM node:14
 WORKDIR /app
 
 # Copiez les fichiers package.json et package-lock.json dans le conteneur
-COPY package*.json ./
+COPY client/package*.json ./client/
 
 # Installez les dépendances
 RUN npm install --silent
