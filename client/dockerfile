@@ -10,6 +10,8 @@ COPY client/package*.json ./client/
 # Installez les dépendances
 RUN npm install --silent
 
+RUN ls -la /app
+
 # Copiez tous les fichiers sources dans le conteneur
 COPY . .
 
