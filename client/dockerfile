@@ -14,7 +14,7 @@ RUN npm install --silent
 COPY . .
 
 # Construisez l'application React
-RUN npm run build
+RUN npm run -ti -d build
 
 # Exposez le port sur lequel l'application sera accessible
 EXPOSE 3000
