@@ -1,20 +1,23 @@
-# Utilisez une image de base Node.js
+# Use a base Node.js image
 FROM node:14
 
-# Définissez le répertoire de travail dans le conteneur
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copiez les fichiers package.json et package-lock.json dans le conteneur
- COPY server/package*.json ./server/
+# Copy package.json and package-lock.json from the root directory
+COPY package*.json ./
 
-# Installez les dépendances
+# Install dependencies
 RUN npm install --silent
 
-# Copiez tous les fichiers sources dans le conteneur
+# Copy all source files into the container
 COPY . .
 
-# Exposez le port sur lequel l'application sera accessible
-EXPOSE 8000
+# Build the React application
+RUN npm run build
 
-# Démarrez l'application backend
+# Expose the port on which the application will be accessible
+EXPOSE 3000
+
+# Start the React application
 CMD ["npm", "start"]
