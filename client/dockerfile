@@ -16,7 +16,7 @@ RUN ls -la /app
 COPY . .
 
 # Construisez l'application React
-RUN npm run -ti -d build
+RUN npm run  build
 
 # Exposez le port sur lequel l'application sera accessible
 EXPOSE 3000
