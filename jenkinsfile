@@ -11,13 +11,16 @@ pipeline {
         stage('Build and Push Docker Images') {
             steps {
                 script {
-                    // Build and push the client-side Docker image
-                    sh "docker build -t ${CLIENT_DOCKER_IMAGE}:${DOCKER_TAG} -f ./client/dockerfile ./client"
-                    sh "docker push ${CLIENT_DOCKER_IMAGE}:${DOCKER_TAG}"
+                  // Build and push the client-side Docker image
+                    sh "docker build -t ${CLIENT_DOCKER_IMAGE}:${DOCKER_TAG} -f  ./client/dockerfile ./client"
+                    withDockerRegistry([credentialsId: 'b33e1e9a-3f1a-4926-9a8b-4763f9c1340e', url: '']) {
+                        sh "docker push ${CLIENT_DOCKER_IMAGE}:${DOCKER_TAG}"
+                    }
 
                     // Build and push the server-side Docker image
                     sh "docker build -t ${SERVER_DOCKER_IMAGE}:${DOCKER_TAG} -f ./server/dockerfile ./server"
-                    sh "docker push ${SERVER_DOCKER_IMAGE}:${DOCKER_TAG}"
+                    withDockerRegistry([credentialsId: 'b33e1e9a-3f1a-4926-9a8b-4763f9c1340e', url: '']) {
+                        sh "docker push ${SERVER_DOCKER_IMAGE}:${DOCKER_TAG}"
                 }
             }
         }
