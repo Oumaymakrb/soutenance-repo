@@ -5,6 +5,7 @@ pipeline {
         CLIENT_DOCKER_IMAGE = 'oumaymaii/soutenance-app-client-jenkins'
         SERVER_DOCKER_IMAGE = 'oumaymaii/soutenance-app-server-jenkins'
         DOCKER_TAG = 'latest' // Consider using a versioned tag
+        DOCKER_REGISTRY_URL = 'your-docker-registry-url' // Specify your Docker registry URL
     }
 
     stages {
@@ -13,13 +14,13 @@ pipeline {
                 script {
                     // Build and push the client-side Docker image
                     sh "docker build -t ${CLIENT_DOCKER_IMAGE}:${DOCKER_TAG} -f  ./client/dockerfile ./client"
-                    withDockerRegistry([credentialsId: 'eemy717', url: '']) {
+                    withDockerRegistry([credentialsId: 'eemy718', url: '']) {
                         sh "docker push ${CLIENT_DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
 
                     // Build and push the server-side Docker image
                     sh "docker build -t ${SERVER_DOCKER_IMAGE}:${DOCKER_TAG} -f ./server/dockerfile ./server"
-                    withDockerRegistry([credentialsId: 'eemy717', url:'']) {
+                    withDockerRegistry([credentialsId: 'eemy718', url: '']) {
                         sh "docker push ${SERVER_DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
                 }
@@ -29,8 +30,7 @@ pipeline {
         stage('Deploy to Minikube') {
             steps {
                 script {
-                    // Set the Kubernetes context to Minikube
-                    sh 'kubectl config use-context minikube'
+                
 
                     // Apply Kubernetes deployment and service YAML files
                     sh 'kubectl apply -f kubernetes/deployment.yaml'
@@ -39,4 +39,4 @@ pipeline {
             }
         }
     }
-}
+} 
