@@ -8,4 +8,4 @@ spec:
   ports:
     - protocol: "TCP"
       port: 3000
-  type: NodePort
+  type: 192.168.49.2
