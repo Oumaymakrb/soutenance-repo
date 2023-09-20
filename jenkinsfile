@@ -1,25 +1,27 @@
 pipeline {
     agent any
 
+    environment {
+        CLIENT_DOCKER_IMAGE = 'oumaymaii/soutenance-app-client-jenkins'
+        SERVER_DOCKER_IMAGE = 'oumaymaii/soutenance-app-server-jenkins'
+        DOCKER_TAG = 'latest' // Consider using a versioned tag
+        DOCKER_REGISTRY_URL = 'your-docker-registry-url' // Specify your Docker registry URL
+    }
+
     stages {
         stage('Build and Push Docker Images') {
             steps {
                 script {
-                    // Define variables for client and server images and tags
-                    def clientDockerImage = 'oumaymaii/soutenance-app-client-jenkins'
-                    def serverDockerImage = 'oumaymaii/soutenance-app-server-jenkins'
-                    def dockerTag = 'latest'
-
                     // Build and push the client-side Docker image
-                    sh "docker build -t ${clientDockerImage}:${dockerTag} -f  ./client/dockerfile ./client"
+                    sh "docker build -t ${CLIENT_DOCKER_IMAGE}:${DOCKER_TAG} -f  ./client/dockerfile ./client"
                     withDockerRegistry([credentialsId: 'eemy718', url: '']) {
-                        sh "docker push ${clientDockerImage}:${dockerTag}"
+                        sh "docker push ${CLIENT_DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
 
                     // Build and push the server-side Docker image
-                    sh "docker build -t ${serverDockerImage}:${dockerTag} -f ./server/dockerfile ./server"
+                    sh "docker build -t ${SERVER_DOCKER_IMAGE}:${DOCKER_TAG} -f ./server/dockerfile ./server"
                     withDockerRegistry([credentialsId: 'eemy718', url: '']) {
-                        sh "docker push ${serverDockerImage}:${dockerTag}"
+                        sh "docker push ${SERVER_DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
                 }
             }
