@@ -5,7 +5,6 @@ pipeline {
         CLIENT_DOCKER_IMAGE = 'oumaymaii/soutenance-app-client-jenkins'
         SERVER_DOCKER_IMAGE = 'oumaymaii/soutenance-app-server-jenkins'
         DOCKER_TAG = 'latest' // Consider using a versioned tag
-        DOCKER_REGISTRY_URL = 'your-docker-registry-url' // Specify your Docker registry URL
     }
 
     stages {
@@ -13,16 +12,12 @@ pipeline {
             steps {
                 script {
                     // Build and push the client-side Docker image
-                    sh "docker build -t ${CLIENT_DOCKER_IMAGE}:${DOCKER_TAG} -f  ./client/dockerfile ./client"
-                    withDockerRegistry([credentialsId: 'eemy718', url: '']) {
-                        sh "docker push ${CLIENT_DOCKER_IMAGE}:${DOCKER_TAG}"
-                    }
+                    sh "docker build -t ${CLIENT_DOCKER_IMAGE}:${DOCKER_TAG} -f ./client/dockerfile ./client"
+                    sh "docker push ${CLIENT_DOCKER_IMAGE}:${DOCKER_TAG}"
 
                     // Build and push the server-side Docker image
                     sh "docker build -t ${SERVER_DOCKER_IMAGE}:${DOCKER_TAG} -f ./server/dockerfile ./server"
-                    withDockerRegistry([credentialsId: 'eemy718', url: '']) {
-                        sh "docker push ${SERVER_DOCKER_IMAGE}:${DOCKER_TAG}"
-                    }
+                    sh "docker push ${SERVER_DOCKER_IMAGE}:${DOCKER_TAG}"
                 }
             }
         }
@@ -30,17 +25,17 @@ pipeline {
         stage('Deploy to Minikube') {
             steps {
                 script {
-                   withCredentials([kubeconfig(credentialsId: 'eemy717', variable: 'KUBECONFIG_CREDENTIALS')]) {
-                    sh 
-                        kubectl config set-context minikube --cluster=minikube --user=jenkins-sa
-                        kubectl apply -f kubernetes/deployment.yaml -n default  
-                    
+                    // Set the Kubernetes context to Minikube
+                    sh 'kubectl config use-context minikube'
 
-                    // Apply Kubernetes deployment and service YAML files
-                    sh 'kubectl apply -f kubernetes/deployment.yaml'
-                    sh 'kubectl apply -f kubernetes/service.yaml'
+                    // Set the namespace for deployment
+                    def namespace = 'default'
+
+                    // Apply Kubernetes deployment and service YAML files in the specified namespace
+                    sh "kubectl apply -f kubernetes/deployment.yaml -n ${namespace}"
+                    sh "kubectl apply -f kubernetes/service.yaml -n ${namespace}"
                 }
             }
         }
     }
-} 
+}
