@@ -1,29 +1,21 @@
 pipeline {
     agent any
 
+    environment {
+        // Define the Docker image names and tags
+        CLIENT_IMAGE = 'oumaymaii/soutenance-app-client-jenkins:latest'
+        SERVER_IMAGE = 'oumaymaii/soutenance-app-server-jenkins:latest'
+    }
+
     stages {
-        stage('Build and Push Docker Images') {
+        stage('Deploy to Minikube') {
             steps {
                 script {
-                    // Define variables for client and server images and tags
-                    def clientDockerImage = 'oumaymaii/soutenance-app-client-jenkins'
-                    def serverDockerImage = 'oumaymaii/soutenance-app-server-jenkins'
-                    def dockerTag = 'latest'
-
-                    // Build and push the client-side Docker image
-                    sh "docker build -t ${clientDockerImage}:${dockerTag} -f  ./client/dockerfile ./client"
-                    withDockerRegistry([credentialsId: 'f06b7ac1-6365-48f4-88ca-e5d97678739a', url: '']) {
-                        sh "docker push ${clientDockerImage}:${dockerTag}"
-                    }
-
-                    // Build and push the server-side Docker image
-                    sh "docker build -t ${serverDockerImage}:${dockerTag} -f ./server/dockerfile ./server"
-                    withDockerRegistry([credentialsId: 'f06b7ac1-6365-48f4-88ca-e5d97678739a', url: '']) {
-                        sh "docker push ${serverDockerImage}:${dockerTag}"
-                    }
+                    // Apply Kubernetes deployment and service YAML files
+                    sh 'kubectl apply -f kubernetes/deployment.yaml'
+                    sh 'kubectl apply -f kubernetes/service.yaml'
                 }
             }
         }
     }
 }
-
