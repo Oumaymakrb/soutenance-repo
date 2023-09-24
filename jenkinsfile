@@ -27,12 +27,18 @@ pipeline {
             }
         }
 
-        stage('Deploy to Minikube') {
+stage('Deploy to Minikube') {
     steps {
         script {
             try {
+                // Debugging: Log kubeconfig file contents
+                sh "cat /path/to/your/kubeconfig/file"
+
                 // Authenticate with Kubernetes using the Jenkins credentials
                 def kubeConfig = credentials('83a90641-88a6-47e8-8c69-d91c00315970')
+
+                // Debugging: Log cluster URL
+                echo "Cluster URL: ${kubeConfig.server}"
 
                 // Apply Kubernetes deployment and service YAML files in the specified namespace
                 sh "kubectl apply -f kubernetes/deployment.yaml -n ${KUBE_NAMESPACE}"
@@ -48,6 +54,7 @@ pipeline {
         }
     }
 }
+
 
     }
 }
