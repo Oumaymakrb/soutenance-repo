@@ -33,15 +33,12 @@ pipeline {
                     // Authenticate with Kubernetes using the Jenkins credentials
                     def kubeConfig = credentials('ID123')
 
-                    // Set Kubernetes configuration
-                    sh "kubectl config set-cluster minikube --server=https://localhost:8443 --insecure-skip-tls-verify=true"
-                    sh "kubectl config set-credentials jenkins --token=${kubeConfig} --kubeconfig=/tmp/config"
-                    sh "kubectl config set-context jenkins --cluster=minikube --user=jenkins --namespace=${KUBE_NAMESPACE} --kubeconfig=/tmp/config"
-                    sh "kubectl config use-context jenkins --kubeconfig=/tmp/config"
+                    // Store Kubernetes configuration in a temporary file
+                    sh "echo '${kubeConfig}' > /tmp/config"
 
                     // Apply Kubernetes deployment and service YAML files in the specified namespace
-                    sh "kubectl apply -f kubernetes/deployment.yaml -n ${KUBE_NAMESPACE} --kubeconfig=/tmp/config"
-                    sh "kubectl apply -f kubernetes/service.yaml -n ${KUBE_NAMESPACE} --kubeconfig=/tmp/config"
+                    sh "kubectl --kubeconfig=/tmp/config apply -f kubernetes/deployment.yaml -n ${KUBE_NAMESPACE}"
+                    sh "kubectl --kubeconfig=/tmp/config apply -f kubernetes/service.yaml -n ${KUBE_NAMESPACE}"
                 }
             }
         }
