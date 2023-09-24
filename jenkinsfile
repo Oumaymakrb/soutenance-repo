@@ -5,7 +5,7 @@ pipeline {
         CLIENT_DOCKER_IMAGE = 'oumaymaii/soutenance-app-client-jenkins'
         SERVER_DOCKER_IMAGE = 'oumaymaii/soutenance-app-server-jenkins'
         DOCKER_TAG = 'latest'
-        KUBE_CONFIG = '/var/lib/jenkins/workspace/soutenance-pipeline-CICD/.kube/config'
+        KUBE_CONFIG = "${HOME}/.kube/config"/.kube/config'
         KUBE_NAMESPACE = 'jenkins-agents'
     }
 
