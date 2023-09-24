@@ -27,26 +27,39 @@ pipeline {
             }
         }
 
-        stage('Deploy to Minikube') {
-            steps {
-                script {
-                    // Authenticate with Kubernetes using the Jenkins credentials
-                    def kubeConfig = credentials('ID123')
+      stage('Deploy to Minikube') {
+    steps {
+        script {
+            // Authenticate with Kubernetes using the Jenkins credentials
+            def kubeConfig = credentials('ID123')
 
-                    // Store Kubernetes configuration in a temporary file
-                    sh """
-                        echo '${kubeConfig}' > /tmp/config
-                        kubectl config set-cluster minikube --server=https://localhost:8443 --insecure-skip-tls-verify=true --kubeconfig=/tmp/config
-                        kubectl config set-credentials jenkins --token=${kubeConfig} --kubeconfig=/tmp/config
-                        kubectl config set-context jenkins --cluster=minikube --user=jenkins --namespace=${KUBE_NAMESPACE} --kubeconfig=/tmp/config
-                        kubectl config use-context jenkins --kubeconfig=/tmp/config
-                    """
+            // Create Kubernetes configuration file
+            sh """
+                echo 'apiVersion: v1
+                kind: Config
+                clusters:
+                - cluster:
+                    server: https://localhost:8443
+                    insecure-skip-tls-verify: true
+                  name: minikube
+                users:
+                - name: jenkins
+                  user:
+                    token: ${kubeConfig}
+                contexts:
+                - context:
+                    cluster: minikube
+                    user: jenkins
+                    namespace: ${KUBE_NAMESPACE}
+                  name: jenkins
+                current-context: jenkins' > /tmp/config
+            """
 
-                    // Apply Kubernetes deployment and service YAML files in the specified namespace
-                    sh "kubectl apply -f kubernetes/deployment.yaml -n ${KUBE_NAMESPACE} --kubeconfig=/tmp/config"
-                    sh "kubectl apply -f kubernetes/service.yaml -n ${KUBE_NAMESPACE} --kubeconfig=/tmp/config"
-                }
-            }
+            // Use the created configuration file for kubectl
+            sh "kubectl --kubeconfig=/tmp/config get pods"
         }
+    }
+}
+
     }
 }
