@@ -1,6 +1,11 @@
 pipeline {
     agent any
-
+  environment {
+        CLIENT_DOCKER_IMAGE = 'oumaymaii/soutenance-app-client-jenkins'
+        SERVER_DOCKER_IMAGE = 'oumaymaii/soutenance-app-server-jenkins'
+        DOCKER_TAG = 'latest'
+      
+    }
     stages {
         stage('Build and Push Docker Images') {
             steps {
