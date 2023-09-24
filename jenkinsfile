@@ -6,7 +6,7 @@ pipeline {
         SERVER_DOCKER_IMAGE = 'oumaymaii/soutenance-app-server-jenkins'
         DOCKER_TAG = 'latest'
         KUBE_CONFIG = "/home/oumayma/.kube/config"
-        KUBECONFIG = credentials('c421ff72-4d22-4ef1-aa41-cefc3116c0a9')
+        KUBECONFIG = credentials('kubernetes')
         KUBE_NAMESPACE = 'jenkins-agents'
     }
 
