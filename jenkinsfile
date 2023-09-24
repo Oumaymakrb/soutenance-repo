@@ -5,14 +5,15 @@ pipeline {
         CLIENT_DOCKER_IMAGE = 'oumaymaii/soutenance-app-client-jenkins'
         SERVER_DOCKER_IMAGE = 'oumaymaii/soutenance-app-server-jenkins'
         DOCKER_TAG = 'latest' // Consider using a versioned tag
+        KUBE_NAMESPACE = 'jenkins-agents' // Replace with your Kubernetes namespace
     }
 
     stages {
         stage('Build and Push Docker Images') {
             steps {
                 script {
-                  // Build and push the client-side Docker image
-                    sh "docker build -t ${CLIENT_DOCKER_IMAGE}:${DOCKER_TAG} -f  ./client/dockerfile ./client"
+                    // Build and push the client-side Docker image
+                    sh "docker build -t ${CLIENT_DOCKER_IMAGE}:${DOCKER_TAG} -f ./client/dockerfile ./client"
                     withDockerRegistry([credentialsId: 'b33e1e9a-3f1a-4926-9a8b-4763f9c1340e', url: '']) {
                         sh "docker push ${CLIENT_DOCKER_IMAGE}:${DOCKER_TAG}"
                     }
@@ -29,15 +30,18 @@ pipeline {
         stage('Deploy to Minikube') {
             steps {
                 script {
-                    // Set the Kubernetes context to Minikube
-                    sh 'kubectl config use-context minikube'
+                    // Authenticate with Kubernetes using the Jenkins credentials
+                    def kubeConfig = credentials('ID123')
 
-                    // Set the namespace for deployment
-                    def namespace = 'default'
+                    // Set Kubernetes configuration
+                    sh "kubectl config set-cluster minikube --server=https://localhost:8443 --insecure-skip-tls-verify=true"
+                    sh "kubectl config set-credentials jenkins --token=${kubeConfig} --kubeconfig=/tmp/config"
+                    sh "kubectl config set-context jenkins --cluster=minikube --user=jenkins --namespace=${KUBE_NAMESPACE} --kubeconfig=/tmp/config"
+                    sh "kubectl config use-context jenkins --kubeconfig=/tmp/config"
 
                     // Apply Kubernetes deployment and service YAML files in the specified namespace
-                    sh "kubectl apply -f kubernetes/deployment.yaml -n ${namespace}"
-                    sh "kubectl apply -f kubernetes/service.yaml -n ${namespace}"
+                    sh "kubectl apply -f kubernetes/deployment.yaml -n ${KUBE_NAMESPACE} --kubeconfig=/tmp/config"
+                    sh "kubectl apply -f kubernetes/service.yaml -n ${KUBE_NAMESPACE} --kubeconfig=/tmp/config"
                 }
             }
         }
