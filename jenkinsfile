@@ -51,6 +51,9 @@ pipeline {
                 // Run other kubectl commands for debugging
                 sh 'kubectl get pods -n jenkins-agents'
                 sh 'kubectl version'
+sh 'echo $KUBECONFIG'
+sh 'minikube status'
+
                 
                 // Add more debugging commands as needed
             }
