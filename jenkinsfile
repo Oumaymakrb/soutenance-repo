@@ -35,8 +35,8 @@ pipeline {
 
 
                     // Apply Kubernetes deployment and service YAML files in the specified namespace
-                    sh "kubectl --kubeconfig=/tmp/config apply -f kubernetes/deployment.yaml -n ${KUBE_NAMESPACE}"
-                    sh "kubectl --kubeconfig=/tmp/config apply -f kubernetes/service.yaml -n ${KUBE_NAMESPACE}"
+                    sh "kubectl  apply -f kubernetes/deployment.yaml -n ${KUBE_NAMESPACE}"
+                    sh "kubectl  apply -f kubernetes/service.yaml -n ${KUBE_NAMESPACE}"
                 }
             }
         }
