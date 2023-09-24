@@ -35,6 +35,8 @@ pipeline {
                     // Authenticate with Kubernetes using the kubeconfig file
                     def kubeConfig = readFile(KUBE_CONFIG)
 
+echo "KUBECONFIG: ${KUBE_CONFIG}"
+
                     // Write the kubeconfig to a temporary file for kubectl to use
                     def kubeConfigFile = writeFile(file: 'kubeconfig', text: kubeConfig)
 
