@@ -31,43 +31,8 @@ pipeline {
 
         stage('Debugging') {
             steps {
-                // Print the value of KUBECONFIG
-                sh 'echo "KUBECONFIG: $KUBECONFIG"'
-
-                // Print the current context and other information
-                sh 'kubectl config view'
-
-                // Print the current context
-                sh 'kubectl config current-context'
-
-                // Print the list of contexts
-                sh 'kubectl config get-contexts'
-
-                // Print the list of clusters
-                sh 'kubectl config get-clusters'
-
-                // Print the list of users
-                sh 'kubectl config get-users'
-
-                // Run other kubectl commands for debugging
-                sh 'kubectl get pods -n jenkins-agents'
-                sh 'kubectl version'
-                sh 'echo $KUBECONFIG'
-                sh 'minikube status'
-                 sh 'minikube profile minikube'
-                // Add more debugging commands as needed
-            }
-        }
-
-        stage('Deploy to Minikube') {
-            steps {
-                script {
-                    // Use the existing KUBE_CONFIG environment variable
-                    def kubeConfigFile = env.KUBE_CONFIG
-
-                    // Apply Kubernetes deployment and service YAML files in the specified namespace
-                    sh "KUBECONFIG=${kubeConfigFile} kubectl apply -f kubernetes/deployment.yaml -n ${KUBE_NAMESPACE}"
-                    sh "KUBECONFIG=${kubeConfigFile} kubectl apply -f kubernetes/service.yaml -n ${KUBE_NAMESPACE}"
+                kubeconfig(credentialsId: 'kubernetes', serverUrl: '') {
+                    sh 'kubectl apply -f ./kubernetes/deployment.yaml'
                 }
             }
         }
