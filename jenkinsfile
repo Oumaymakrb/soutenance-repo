@@ -54,8 +54,7 @@ pipeline {
                 sh 'kubectl version'
                 sh 'echo $KUBECONFIG'
                 sh 'minikube status'
- // Start Minikube with the "minikube" profile
-            sh 'minikube start -p minikube'
+                 sh 'minikube profile minikube'
                 // Add more debugging commands as needed
             }
         }
