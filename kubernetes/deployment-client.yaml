@@ -15,3 +15,8 @@ spec:
       containers:
         - name: client
           image: oumaymaii/soutenance-app-client-jenkins:latest
+          command: ["npm", "start]
+          stdin: true
+          tty: true
+          ports:
+            - containerPort: 3000
