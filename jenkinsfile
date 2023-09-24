@@ -1,14 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        CLIENT_DOCKER_IMAGE = 'oumaymaii/soutenance-app-client-jenkins'
-        SERVER_DOCKER_IMAGE = 'oumaymaii/soutenance-app-server-jenkins'
-        DOCKER_TAG = 'latest'
-        KUBE_CONFIG = "/home/oumayma/.kube/config"
-        KUBECONFIG = credentials('kubernetes')
-        KUBE_NAMESPACE = 'jenkins-agents'
-    }
 
     stages {
 
