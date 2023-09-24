@@ -28,33 +28,37 @@ pipeline {
                 }
             }
         }
+       stage('Debugging') {
+            steps {
+                // Print the value of KUBECONFIG
+                sh 'echo "KUBECONFIG: $KUBECONFIG"'
+
+                // Print the current context and other information
+                sh 'kubectl config view'
+
+                // Print the current context
+                sh 'kubectl config current-context'
+
+                // Print the list of contexts
+                sh 'kubectl config get-contexts'
+
+                // Print the list of clusters
+                sh 'kubectl config get-clusters'
+
+                // Print the list of users
+                sh 'kubectl config get-users'
+
+                // Run other kubectl commands for debugging
+                sh 'kubectl get pods -n jenkins-agents'
+                sh 'kubectl version'
+                
+                // Add more debugging commands as needed
+            }
+        }
 
         stage('Deploy to Minikube') {
             steps {
                 script {
-
-
-
-
-   // Print the value of KUBECONFIG
-                    sh 'echo $KUBECONFIG'
-
-                    // View the Kubernetes configuration
-                    sh 'kubectl config view'
-
-                    // Get the current context
-                    sh 'kubectl config current-context'
-
-                    // Get the list of contexts
-                    sh 'kubectl config get-contexts'
-
-                    // Get the list of clusters
-                    sh 'kubectl config get-clusters'
-
-                    // Get the list of users
-                    sh 'kubectl config get-users'
-                    // Authenticate with Kubernetes using the kubeconfig file
-                    def kubeConfig = readFile(KUBE_CONFIG)
 
 
 
