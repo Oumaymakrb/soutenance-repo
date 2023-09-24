@@ -15,7 +15,7 @@ spec:
       containers:
         - name: server
           image: oumaymaii/soutenance-app-server-jenkins:latest
-          command: ["npm", "start]
+          command: ["npm", "start"]
           stdin: true
           tty: true
           ports:
