@@ -6,8 +6,8 @@ pipeline {
         SERVER_DOCKER_IMAGE = 'oumaymaii/soutenance-app-server-jenkins'
         DOCKER_TAG = 'latest'
         KUBE_CONFIG = "/home/oumayma/.kube/config"
-        KUBECONFIG = credentials('c421ff72-4d22-4ef1-aa41-cefc3116c0a9') 
         KUBE_NAMESPACE = 'jenkins-agents'
+        CLIENT_KEY_PATH = '/var/lib/jenkins/client.key' // New environment variable
     }
 
     stages {
@@ -28,54 +28,5 @@ pipeline {
                 }
             }
         }
-       stage('Debugging') {
-            steps {
-                // Print the value of KUBECONFIG
-                sh 'echo "KUBECONFIG: $KUBECONFIG"'
 
-                // Print the current context and other information
-                sh 'kubectl config view'
-
-                // Print the current context
-                sh 'kubectl config current-context'
-
-                // Print the list of contexts
-                sh 'kubectl config get-contexts'
-
-                // Print the list of clusters
-                sh 'kubectl config get-clusters'
-
-                // Print the list of users
-                sh 'kubectl config get-users'
-
-                // Run other kubectl commands for debugging
-                sh 'kubectl get pods -n jenkins-agents'
-                sh 'kubectl version'
-sh 'echo $KUBECONFIG'
-sh 'minikube status'
-
-                
-                // Add more debugging commands as needed
-            }
-        }
-
-        stage('Deploy to Minikube') {
-            steps {
-                script {
-
-
-
-                    // Write the kubeconfig to a temporary file for kubectl to use
-                    def kubeConfigFile = writeFile(file: 'kubeconfig', text: kubeConfig)
-
-                    // Apply Kubernetes deployment and service YAML files in the specified namespace
-                    sh "KUBECONFIG=${kubeConfigFile} kubectl apply -f kubernetes/deployment.yaml -n ${KUBE_NAMESPACE}"
-                    sh "KUBECONFIG=${kubeConfigFile} kubectl apply -f kubernetes/service.yaml -n ${KUBE_NAMESPACE}"
-
-                    // Clean up the temporary kubeconfig file
-                    sh "rm ${kubeConfigFile}"
-                }
-            }
-        }
-    }
-}
+       
