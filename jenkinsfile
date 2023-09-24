@@ -4,8 +4,9 @@ pipeline {
     environment {
         CLIENT_DOCKER_IMAGE = 'oumaymaii/soutenance-app-client-jenkins'
         SERVER_DOCKER_IMAGE = 'oumaymaii/soutenance-app-server-jenkins'
-        DOCKER_TAG = 'latest' // Consider using a versioned tag
-        KUBE_NAMESPACE = 'jenkins-agents' // Replace with your Kubernetes namespace
+        DOCKER_TAG = 'latest'
+        KUBE_CONFIG = '/var/lib/jenkins/workspace/soutenance-pipeline-CICD/.kube/config'
+        KUBE_NAMESPACE = 'jenkins-agents'
     }
 
     stages {
@@ -27,34 +28,23 @@ pipeline {
             }
         }
 
-stage('Deploy to Minikube') {
-    steps {
-        script {
-            try {
-                // Debugging: Log kubeconfig file contents
-                sh "cat /path/to/your/kubeconfig/file"
+        stage('Deploy to Minikube') {
+            steps {
+                script {
+                    // Authenticate with Kubernetes using the kubeconfig file
+                    def kubeConfig = readFile(KUBE_CONFIG)
 
-                // Authenticate with Kubernetes using the Jenkins credentials
-                def kubeConfig = credentials('83a90641-88a6-47e8-8c69-d91c00315970')
+                    // Write the kubeconfig to a temporary file for kubectl to use
+                    def kubeConfigFile = writeFile(file: 'kubeconfig', text: kubeConfig)
 
-                // Debugging: Log cluster URL
-                echo "Cluster URL: ${kubeConfig.server}"
+                    // Apply Kubernetes deployment and service YAML files in the specified namespace
+                    sh "KUBECONFIG=${kubeConfigFile} kubectl apply -f kubernetes/deployment.yaml -n ${KUBE_NAMESPACE}"
+                    sh "KUBECONFIG=${kubeConfigFile} kubectl apply -f kubernetes/service.yaml -n ${KUBE_NAMESPACE}"
 
-                // Apply Kubernetes deployment and service YAML files in the specified namespace
-                sh "kubectl apply -f kubernetes/deployment.yaml -n ${KUBE_NAMESPACE}"
-                sh "kubectl apply -f kubernetes/service.yaml -n ${KUBE_NAMESPACE}"
-
-                // Log success
-                echo "Deployment to Minikube completed successfully."
-            } catch (Exception e) {
-                // Handle and log errors
-                currentBuild.result = 'FAILURE'
-                error("Deployment to Minikube failed: ${e.message}")
+                    // Clean up the temporary kubeconfig file
+                    sh "rm ${kubeConfigFile}"
+                }
             }
         }
-    }
-}
-
-
     }
 }
