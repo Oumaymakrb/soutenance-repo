@@ -31,7 +31,7 @@ pipeline {
 
         stage('Debugging') {
             steps {
-                kubeconfig(credentialsId: 'kubernetes', serverUrl: '') {
+                kubeconfig((caCertificate: '',credentialsId: 'kubernetes', serverUrl: '') {
                     sh 'kubectl apply -f ./kubernetes/deployment.yaml'
                 }
             }
