@@ -23,7 +23,9 @@ pipeline {
         stage('deploy to minikube') {
             steps {
                 kubeconfig(caCertificate: '',credentialsId: 'kubernetes', serverUrl: '') {
-                    sh 'kubectl delete -f ./kubernetes/deployment.yaml'
+                    sh 'kubectl apply -f ./kubernetes/deployment.yaml'
+                    sh 'kubectl apply -f ./kubernetes/service.yaml'
+
                 }
             }
         }
