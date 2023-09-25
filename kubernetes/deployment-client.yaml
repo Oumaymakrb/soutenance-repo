@@ -19,4 +19,6 @@ spec:
           stdin: true
           tty: true
           ports:
-            - containerPort: 3000
+            - name: http
+              containerPort: 3000
+              protocol: TCP
