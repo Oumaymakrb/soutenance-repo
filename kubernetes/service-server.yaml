@@ -4,7 +4,7 @@ metadata:
   name: my-app-server-service
 spec:
   selector:
-    app: my-app
+    app: my-app-server
   type: LoadBalancer
   ports:
     - port: 8000
