@@ -5,7 +5,7 @@ metadata:
 spec:
   selector:
     app: my-app-server
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 8000
       targetPort: http
